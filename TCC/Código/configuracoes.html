@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurações</title>
+
+    <link rel="stylesheet" href="style/style.css">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-layout">
+
+            <div class="sidebar-header">
+                <div class="user-box">
+                    <div class="user-avatar">
+                        <img src="img/logo.png" alt="Usuário">
+                    </div>
+
+                    <div class="user-info">
+                        <h1>Worker Safety</h1>
+                        <p>Painel de Controle</p>
+                    </div>
+                </div>
+
+                <button id="btnSidebar" class="btn-sidebar" type="button">☰</button>
+            </div>
+
+            <div class="sidebar-content">
+                <nav class="menu">
+                    <ul>
+                        <li class="menu-header">
+                            <span>DASHBOARDS</span>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="index.html">
+                                <span class="menu-icon">
+                                    <img src="img/Dashboard.png" alt="Dashboard">
+                                </span>
+                                <span class="menu-title">Overview</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="temperatura.html">
+                                <span class="menu-icon">
+                                    <img src="img/Temperatura.png" alt="Temperatura">
+                                </span>
+                                <span class="menu-title">Temperatura</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="umidade.html">
+                                <span class="menu-icon">
+                                    <img src="img/Umidade.png" alt="Umidade">
+                                </span>
+                                <span class="menu-title">Umidade</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="alertas.html">
+                                <span class="menu-icon">
+                                    <img src="img/Alertas.png" alt="Alertas">
+                                </span>
+                                <span class="menu-title">Alertas</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="setores.html">
+                                <span class="menu-icon">
+                                    <img src="img/Setores.png" alt="Setores">
+                                </span>
+                                <span class="menu-title">Setores</span>
+                            </a>
+                        </li>
+
+                        <li class="menu-header second-header">
+                            <span>SETTINGS</span>
+                        </li>
+
+                        <li class="menu-item">
+                            <a href="configuracoes.html">
+                                <span class="menu-icon">
+                                    <img src="img/Configuracao.png" alt="Configurações">
+                                </span>
+                                <span class="menu-title">Configurações</span>
+                            </a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="footer-logo">
+                    <span class="footer-dot"></span>
+                    <span class="footer-text">Worker Safety</span>
+                </div>
+            </div>
+
+        </div>
+    </aside>
+
+    <main class="main-content" id="mainContent">
+        <div class="page-header">
+            <h1>Configurações</h1>
+            <p>Gerencie os limites e opções do sistema</p>
+        </div>
+
+        <div class="config-grid">
+
+            <section class="config-card">
+                <h2>Limite de Temperatura</h2>
+                <div class="form-group">
+                    <label for="tempMin">Temperatura mínima</label>
+                    <input type="number" id="tempMin" placeholder="Ex: 18">
+                </div>
+                <div class="form-group">
+                    <label for="tempMax">Temperatura máxima</label>
+                    <input type="number" id="tempMax" placeholder="Ex: 24">
+                </div>
+                <button class="save-btn">Salvar</button>
+            </section>
+
+            <section class="config-card">
+                <h2>Limite de Umidade</h2>
+                <div class="form-group">
+                    <label for="umiMin">Umidade mínima</label>
+                    <input type="number" id="umiMin" placeholder="Ex: 40">
+                </div>
+                <div class="form-group">
+                    <label for="umiMax">Umidade máxima</label>
+                    <input type="number" id="umiMax" placeholder="Ex: 60">
+                </div>
+                <button class="save-btn">Salvar</button>
+            </section>
+
+            <section class="config-card">
+                <h2>Cadastro de Setores</h2>
+                <div class="form-group">
+                    <label for="nomeSetor">Nome do setor</label>
+                    <input type="text" id="nomeSetor" placeholder="Ex: Arquivo 01">
+                </div>
+                <div class="form-group">
+                    <label for="responsavel">Responsável</label>
+                    <input type="text" id="responsavel" placeholder="Ex: João">
+                </div>
+                <button class="save-btn">Cadastrar</button>
+            </section>
+
+            <section class="config-card">
+                <h2>Usuários</h2>
+                <div class="form-group">
+                    <label for="nomeUsuario">Nome do usuário</label>
+                    <input type="text" id="nomeUsuario" placeholder="Ex: Maria">
+                </div>
+                <div class="form-group">
+                    <label for="emailUsuario">E-mail</label>
+                    <input type="email" id="emailUsuario" placeholder="Ex: email@site.com">
+                </div>
+                <button class="save-btn">Adicionar</button>
+            </section>
+
+            <section class="config-card">
+                <h2>Mensagens e Alertas</h2>
+                <div class="form-group">
+                    <label for="mensagemAlerta">Mensagem padrão</label>
+                    <input type="text" id="mensagemAlerta" placeholder="Ex: Temperatura fora do limite">
+                </div>
+                <button class="save-btn">Salvar</button>
+            </section>
+
+            <section class="config-card">
+                <h2>Preferências do Sistema</h2>
+                <div class="form-group">
+                    <label for="tempoAtualizacao">Tempo de atualização</label>
+                    <input type="number" id="tempoAtualizacao" placeholder="Ex: 10">
+                </div>
+                <div class="form-group">
+                    <label for="notificacao">Notificação sonora</label>
+                    <select id="notificacao">
+                        <option>Ativada</option>
+                        <option>Desativada</option>
+                    </select>
+                </div>
+                <button class="save-btn">Salvar</button>
+            </section>
+
+        </div>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
