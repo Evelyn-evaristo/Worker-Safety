@@ -113,10 +113,10 @@
     </aside>
 
     <main class="main-content" id="mainContent">
-        <h1>Dashboard Geral</h1>
+        <h1>Dashboard Setores</h1>
     </main>
 
-    <script src="js/script.js"></script>
+    <script src="script.js"></script>
 </body>
 
 </html>

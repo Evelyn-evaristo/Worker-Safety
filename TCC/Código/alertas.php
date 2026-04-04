@@ -113,7 +113,7 @@
     </aside>
 
     <main class="main-content" id="mainContent">
-        <h1>Dashboard Geral</h1>
+        <h1>Dashboard Alertas</h1>
     </main>
 
     <script src="script.js"></script>
