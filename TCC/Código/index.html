@@ -113,9 +113,39 @@
     </aside>
 
     <main class="main-content" id="mainContent">
-        <h1>Dashboard Geral</h1>
-    </main>
+    <h1>Dashboard Geral</h1>
 
+    <div class="dashboard">
+
+        <div class="cards">
+            <div class="card">🌡️ Temp: <span id="temp">--</span>°C</div>
+            <div class="card">💧 Umidade: <span id="hum">--</span>%</div>
+            <div class="card">🚨 Alertas: <span id="alert">0</span></div>
+            <div class="card">🏢 Setores: 4</div>
+        </div>
+
+        <div class="dashboard-grid">
+
+            <div class="chart-box">
+                <h3>Temperatura</h3>
+                <div class="chart-area">
+                    <canvas id="tempChart"></canvas>
+                </div>
+            </div>
+
+            <div class="alerts-box">
+                <h3>Últimos Alertas</h3>
+                <ul id="alertList">
+                    <li>Nenhum alerta</li>
+                </ul>
+            </div>
+
+        </div>
+
+    </div>
+</main>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="script.js"></script>
 </body>
 

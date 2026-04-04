@@ -82,10 +82,12 @@ function fecharSubmenuQuandoFecharSidebar() {
     }
 }
 
-btnSidebar.addEventListener("click", function () {
-    alternarSidebar();
-    fecharSubmenuQuandoFecharSidebar();
-});
+if (btnSidebar && sidebar) {
+    btnSidebar.addEventListener("click", function () {
+        alternarSidebar();
+        fecharSubmenuQuandoFecharSidebar();
+    });
+}
 
 window.addEventListener("resize", function () {
     aplicarModoInicial();
@@ -95,3 +97,45 @@ window.addEventListener("resize", function () {
 controlarSubmenu();
 aplicarModoInicial();
 atualizarItemAtivoPorPagina();
+
+/* GRÁFICO */
+const ctx = document.getElementById("tempChart");
+const tempSpan = document.getElementById("temp");
+const humSpan = document.getElementById("hum");
+
+if (ctx && tempSpan && humSpan) {
+    const chart = new Chart(ctx, {
+        type: "line",
+        data: {
+            labels: [],
+            datasets: [{
+                label: "Temperatura",
+                data: [],
+                borderColor: "#a3ff12",
+                tension: 0.3
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false
+        }
+    });
+
+    setInterval(function () {
+        let temp = Math.floor(Math.random() * 10) + 20;
+        let hum = Math.floor(Math.random() * 30) + 40;
+
+        tempSpan.innerText = temp;
+        humSpan.innerText = hum;
+
+        chart.data.labels.push("");
+        chart.data.datasets[0].data.push(temp);
+
+        if (chart.data.labels.length > 10) {
+            chart.data.labels.shift();
+            chart.data.datasets[0].data.shift();
+        }
+
+        chart.update();
+    }, 2000);
+}
