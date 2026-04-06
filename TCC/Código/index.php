@@ -41,7 +41,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="index.html">
+                            <a href="index.php">
                                 <span class="menu-icon">
                                     <img src="img/Dashboard.png" alt="Dashboard">
                                 </span>
@@ -50,7 +50,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="temperatura.html">
+                            <a href="temperatura.php">
                                 <span class="menu-icon">
                                     <img src="img/Temperatura.png" alt="Temperatura">
                                 </span>
@@ -59,7 +59,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="umidade.html">
+                            <a href="umidade.php">
                                 <span class="menu-icon">
                                     <img src="img/Umidade.png" alt="Umidade">
                                 </span>
@@ -68,7 +68,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="alertas.html">
+                            <a href="alertas.php">
                                 <span class="menu-icon">
                                     <img src="img/Alertas.png" alt="Alertas">
                                 </span>
@@ -77,7 +77,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="setores.html">
+                            <a href="setores.php">
                                 <span class="menu-icon">
                                     <img src="img/Setores.png" alt="Setores">
                                 </span>
@@ -90,7 +90,7 @@
                         </li>
 
                         <li class="menu-item">
-                            <a href="configuracoes.html">
+                            <a href="configuracoes.php">
                                 <span class="menu-icon">
                                     <img src="img/Configuracao.png" alt="Configurações">
                                 </span>
