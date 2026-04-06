@@ -9,12 +9,17 @@ $umidade_min = $_POST['limite_umidade_min'] ?? null;
 $buzzer_ativo = $_POST['buzzer_ativo'] ?? 1;
 $led_ativo = $_POST['led_ativo'] ?? 1;
 
-if ($setor_id && $temp_max !== null && $temp_min !== null && $umidade_max !== null && $umidade_min !== null) {
+if ($setor_id !== null && $temp_max !== null && $temp_min !== null && $umidade_max !== null && $umidade_min !== null) {
     $sql = "UPDATE configuracoes 
             SET limite_temp_max = ?, limite_temp_min = ?, limite_umidade_max = ?, limite_umidade_min = ?, buzzer_ativo = ?, led_ativo = ?
             WHERE setor_id = ?";
 
     $stmt = $conexao->prepare($sql);
+
+    if (!$stmt) {
+        die("Erro no prepare");
+    }
+
     $stmt->bind_param("ddddiii", $temp_max, $temp_min, $umidade_max, $umidade_min, $buzzer_ativo, $led_ativo, $setor_id);
 
     if ($stmt->execute()) {
