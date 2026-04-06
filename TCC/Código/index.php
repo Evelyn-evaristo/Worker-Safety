@@ -1,3 +1,105 @@
+<?php
+include "conexao.php";
+
+/*
+|-------------------------------------------------
+| BUSCAR ÚLTIMA LEITURA
+|-------------------------------------------------
+*/
+$tempAtual = 0;
+$umidadeAtual = 0;
+$setorAtual = "Sem setor";
+$temLeitura = false;
+
+$sqlUltima = "
+    SELECT l.temperatura, l.umidade, s.nome_setor
+    FROM leituras l
+    LEFT JOIN setores s ON s.id = l.setor_id
+    ORDER BY l.id DESC
+    LIMIT 1
+";
+
+$resultUltima = $conexao->query($sqlUltima);
+
+if ($resultUltima && $resultUltima->num_rows > 0) {
+    $linhaUltima = $resultUltima->fetch_assoc();
+    $tempAtual = number_format((float)$linhaUltima["temperatura"], 1, ",", ".");
+    $umidadeAtual = number_format((float)$linhaUltima["umidade"], 1, ",", ".");
+    $setorAtual = $linhaUltima["nome_setor"] ?: "Sem setor";
+    $temLeitura = true;
+}
+
+/*
+|-------------------------------------------------
+| CONTAR SETORES
+|-------------------------------------------------
+*/
+$totalSetores = 0;
+$sqlSetores = "SELECT COUNT(*) AS total FROM setores";
+$resultSetores = $conexao->query($sqlSetores);
+
+if ($resultSetores) {
+    $linhaSetores = $resultSetores->fetch_assoc();
+    $totalSetores = (int)$linhaSetores["total"];
+}
+
+/*
+|-------------------------------------------------
+| CONTAR ALERTAS
+|-------------------------------------------------
+| Se existir tabela alertas, usa ela.
+| Se ainda não existir, mantém 0 sem quebrar.
+*/
+$totalAlertas = 0;
+$verificaTabelaAlertas = $conexao->query("SHOW TABLES LIKE 'alertas'");
+
+if ($verificaTabelaAlertas && $verificaTabelaAlertas->num_rows > 0) {
+    $sqlAlertas = "SELECT COUNT(*) AS total FROM alertas";
+    $resultAlertas = $conexao->query($sqlAlertas);
+
+    if ($resultAlertas) {
+        $linhaAlertas = $resultAlertas->fetch_assoc();
+        $totalAlertas = (int)$linhaAlertas["total"];
+    }
+}
+
+/*
+|-------------------------------------------------
+| DADOS PARA O GRÁFICO
+|-------------------------------------------------
+*/
+
+$labelsGrafico = [];
+$dadosGrafico = [];
+
+$sqlGrafico = "
+    SELECT temperatura, created_at
+    FROM leituras
+    ORDER BY id DESC
+    LIMIT 10
+";
+
+$resultGrafico = $conexao->query($sqlGrafico);
+
+if ($resultGrafico) {
+    $leituras = [];
+
+    while ($linha = $resultGrafico->fetch_assoc()) {
+        $leituras[] = $linha;
+    }
+
+    $leituras = array_reverse($leituras);
+
+    foreach ($leituras as $leitura) {
+        $labelsGrafico[] = isset($leitura["created_at"]) && $leitura["created_at"]
+            ? date("H:i", strtotime($leitura["created_at"]))
+            : "";
+        $dadosGrafico[] = (float)$leitura["temperatura"];
+    }
+}
+
+$conexao->close();
+?>
 <!DOCTYPE html>
 <html lang="pt-br">
 
@@ -97,7 +199,6 @@
                                 <span class="menu-title">Configurações</span>
                             </a>
                         </li>
-
                     </ul>
                 </nav>
             </div>
@@ -113,39 +214,51 @@
     </aside>
 
     <main class="main-content" id="mainContent">
-    <h1>Dashboard Geral</h1>
+        <h1>Dashboard Geral</h1>
 
-    <div class="dashboard">
+        <div class="dashboard">
 
-        <div class="cards">
-            <div class="card">🌡️ Temp: <span id="temp">--</span>°C</div>
-            <div class="card">💧 Umidade: <span id="hum">--</span>%</div>
-            <div class="card">🚨 Alertas: <span id="alert">0</span></div>
-            <div class="card">🏢 Setores: 4</div>
-        </div>
+            <div class="cards">
+                <div class="card">🌡️ Temp: <span id="temp"><?= $tempAtual ?></span>°C</div>
+                <div class="card">💧 Umidade: <span id="hum"><?= $umidadeAtual ?></span>%</div>
+                <div class="card">🚨 Alertas: <span id="alert"><?= $totalAlertas ?></span></div>
+                <div class="card">🏢 Setores: <?= $totalSetores ?></div>
+            </div>
 
-        <div class="dashboard-grid">
+            <div class="dashboard-grid">
 
-            <div class="chart-box">
-                <h3>Temperatura</h3>
-                <div class="chart-area">
-                    <canvas id="tempChart"></canvas>
+                <div class="chart-box">
+                    <h3>Temperatura <?= $temLeitura ? "- " . htmlspecialchars($setorAtual) : "" ?></h3>
+                    <div class="chart-area">
+                        <canvas id="tempChart"></canvas>
+                    </div>
                 </div>
-            </div>
 
-            <div class="alerts-box">
-                <h3>Últimos Alertas</h3>
-                <ul id="alertList">
-                    <li>Nenhum alerta</li>
-                </ul>
+                <div class="alerts-box">
+                    <h3>Resumo</h3>
+                    <ul id="alertList">
+                        <?php if ($temLeitura): ?>
+                            <li>Última leitura registrada no setor: <?= htmlspecialchars($setorAtual) ?></li>
+                            <li>Temperatura atual: <?= $tempAtual ?> °C</li>
+                            <li>Umidade atual: <?= $umidadeAtual ?> %</li>
+                        <?php else: ?>
+                            <li>Ainda não existem leituras cadastradas no banco.</li>
+                        <?php endif; ?>
+                    </ul>
+                </div>
+
             </div>
 
         </div>
-
-    </div>
-</main>
+    </main>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        window.graficoTemperatura = {
+            labels: <?= json_encode($labelsGrafico, JSON_UNESCAPED_UNICODE) ?>,
+            dados: <?= json_encode($dadosGrafico, JSON_UNESCAPED_UNICODE) ?>
+        };
+    </script>
     <script src="script.js"></script>
 </body>
 

@@ -1,13 +1,15 @@
 const btnSidebar = document.getElementById("btnSidebar");
 const sidebar = document.getElementById("sidebar");
 const menuItems = document.querySelectorAll(".menu-item");
-const menuLinks = document.querySelectorAll(".menu-item a[href$='.html']");
+const menuLinks = document.querySelectorAll(".menu-item a[href$='.php']");
 const menuConfiguracoes = document.getElementById("menuConfiguracoes");
 const botaoConfiguracoes = menuConfiguracoes
     ? menuConfiguracoes.querySelector(".menu-button-item")
     : null;
 
 function aplicarModoInicial() {
+    if (!sidebar) return;
+
     if (window.innerWidth <= 768) {
         sidebar.classList.remove("closed");
         sidebar.classList.remove("open");
@@ -18,6 +20,8 @@ function aplicarModoInicial() {
 }
 
 function alternarSidebar() {
+    if (!sidebar) return;
+
     if (window.innerWidth <= 768) {
         sidebar.classList.toggle("open");
     } else {
@@ -32,7 +36,7 @@ function limparAtivo() {
 }
 
 function atualizarItemAtivoPorPagina() {
-    const paginaAtual = window.location.pathname.split("/").pop() || "index.html";
+    const paginaAtual = window.location.pathname.split("/").pop() || "index.php";
 
     limparAtivo();
 
@@ -49,7 +53,7 @@ function atualizarItemAtivoPorPagina() {
 }
 
 function controlarSubmenu() {
-    if (!botaoConfiguracoes || !menuConfiguracoes) {
+    if (!botaoConfiguracoes || !menuConfiguracoes || !sidebar) {
         return;
     }
 
@@ -69,7 +73,7 @@ function controlarSubmenu() {
 }
 
 function fecharSubmenuQuandoFecharSidebar() {
-    if (!menuConfiguracoes) {
+    if (!menuConfiguracoes || !sidebar) {
         return;
     }
 
@@ -98,19 +102,17 @@ controlarSubmenu();
 aplicarModoInicial();
 atualizarItemAtivoPorPagina();
 
-/* GRÁFICO */
+/* GRÁFICO REAL */
 const ctx = document.getElementById("tempChart");
-const tempSpan = document.getElementById("temp");
-const humSpan = document.getElementById("hum");
 
-if (ctx && tempSpan && humSpan) {
-    const chart = new Chart(ctx, {
+if (ctx && window.graficoTemperatura) {
+    new Chart(ctx, {
         type: "line",
         data: {
-            labels: [],
+            labels: window.graficoTemperatura.labels,
             datasets: [{
                 label: "Temperatura",
-                data: [],
+                data: window.graficoTemperatura.dados,
                 borderColor: "#a3ff12",
                 tension: 0.3
             }]
@@ -120,22 +122,4 @@ if (ctx && tempSpan && humSpan) {
             maintainAspectRatio: false
         }
     });
-
-    setInterval(function () {
-        let temp = Math.floor(Math.random() * 10) + 20;
-        let hum = Math.floor(Math.random() * 30) + 40;
-
-        tempSpan.innerText = temp;
-        humSpan.innerText = hum;
-
-        chart.data.labels.push("");
-        chart.data.datasets[0].data.push(temp);
-
-        if (chart.data.labels.length > 10) {
-            chart.data.labels.shift();
-            chart.data.datasets[0].data.shift();
-        }
-
-        chart.update();
-    }, 2000);
 }
