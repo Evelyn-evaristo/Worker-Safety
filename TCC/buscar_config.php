@@ -1,11 +1,13 @@
 <?php
-header('Content-Type: application/json');
-include "conexao.php";
+header('Content-Type: application/json; charset=utf-8');
+include __DIR__ . "/conexao.php";
 
-$setor_id = $_GET['setor_id'] ?? null;
+$setor_id = filter_input(INPUT_GET, 'setor_id', FILTER_VALIDATE_INT);
 
-if ($setor_id === null) {
-    echo json_encode(["erro" => "setor_id não informado"]);
+if ($setor_id === false || $setor_id === null) {
+    http_response_code(400);
+    echo json_encode(["erro" => "setor_id inválido ou não informado"], JSON_UNESCAPED_UNICODE);
+    $conexao->close();
     exit;
 }
 
@@ -16,7 +18,9 @@ $sql = "SELECT limite_temp_max, limite_temp_min, limite_umidade_max, limite_umid
 $stmt = $conexao->prepare($sql);
 
 if (!$stmt) {
-    echo json_encode(["erro" => "erro no prepare"]);
+    http_response_code(500);
+    echo json_encode(["erro" => "erro no prepare", "detalhe" => $conexao->error], JSON_UNESCAPED_UNICODE);
+    $conexao->close();
     exit;
 }
 
@@ -26,9 +30,10 @@ $stmt->execute();
 $resultado = $stmt->get_result();
 
 if ($linha = $resultado->fetch_assoc()) {
-    echo json_encode($linha);
+    echo json_encode($linha, JSON_UNESCAPED_UNICODE);
 } else {
-    echo json_encode(["erro" => "configuração não encontrada"]);
+    http_response_code(404);
+    echo json_encode(["erro" => "configuração não encontrada"], JSON_UNESCAPED_UNICODE);
 }
 
 $stmt->close();

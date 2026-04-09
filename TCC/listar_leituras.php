@@ -1,6 +1,6 @@
 <?php
-header('Content-Type: application/json');
-include "conexao.php";
+header('Content-Type: application/json; charset=utf-8');
+include __DIR__ . "/conexao.php";
 
 $sql = "
     SELECT l.id, l.setor_id, l.temperatura, l.umidade, l.created_at, s.nome_setor
@@ -12,12 +12,17 @@ $sql = "
 
 $resultado = $conexao->query($sql);
 
+if (!$resultado) {
+    http_response_code(500);
+    echo json_encode(["erro" => "erro ao listar leituras", "detalhe" => $conexao->error], JSON_UNESCAPED_UNICODE);
+    $conexao->close();
+    exit;
+}
+
 $leituras = [];
 
-if ($resultado) {
-    while ($linha = $resultado->fetch_assoc()) {
-        $leituras[] = $linha;
-    }
+while ($linha = $resultado->fetch_assoc()) {
+    $leituras[] = $linha;
 }
 
 echo json_encode($leituras, JSON_UNESCAPED_UNICODE);
