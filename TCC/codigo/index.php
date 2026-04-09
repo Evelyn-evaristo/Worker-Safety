@@ -1,10 +1,24 @@
 <?php
-include "conexao.php";
+$caminhoConexao = __DIR__ . "/conexao.php";
+
+if (!file_exists($caminhoConexao)) {
+    $caminhoConexao = __DIR__ . "/../conexao.php";
+}
+
+if (!file_exists($caminhoConexao)) {
+    die("Erro: arquivo conexao.php não foi encontrado. Verifique em qual pasta ele está.");
+}
+
+include $caminhoConexao;
+
+if (!isset($conexao) || !$conexao) {
+    die("Erro: conexão com o banco não foi carregada.");
+}
 
 /*
-|-------------------------------------------------
-| BUSCAR ÚLTIMA LEITURA
-|-------------------------------------------------
+|--------------------------------------------------------------------------
+| ÚLTIMA LEITURA
+|--------------------------------------------------------------------------
 */
 $tempAtual = 0;
 $umidadeAtual = 0;
@@ -23,18 +37,20 @@ $resultUltima = $conexao->query($sqlUltima);
 
 if ($resultUltima && $resultUltima->num_rows > 0) {
     $linhaUltima = $resultUltima->fetch_assoc();
+
     $tempAtual = number_format((float)$linhaUltima["temperatura"], 1, ",", ".");
     $umidadeAtual = number_format((float)$linhaUltima["umidade"], 1, ",", ".");
-    $setorAtual = $linhaUltima["nome_setor"] ?: "Sem setor";
+    $setorAtual = !empty($linhaUltima["nome_setor"]) ? $linhaUltima["nome_setor"] : "Sem setor";
     $temLeitura = true;
 }
 
 /*
-|-------------------------------------------------
-| CONTAR SETORES
-|-------------------------------------------------
+|--------------------------------------------------------------------------
+| TOTAL DE SETORES
+|--------------------------------------------------------------------------
 */
 $totalSetores = 0;
+
 $sqlSetores = "SELECT COUNT(*) AS total FROM setores";
 $resultSetores = $conexao->query($sqlSetores);
 
@@ -44,16 +60,15 @@ if ($resultSetores) {
 }
 
 /*
-|-------------------------------------------------
-| CONTAR ALERTAS
-|-------------------------------------------------
-| Se existir tabela alertas, usa ela.
-| Se ainda não existir, mantém 0 sem quebrar.
+|--------------------------------------------------------------------------
+| TOTAL DE ALERTAS
+|--------------------------------------------------------------------------
 */
 $totalAlertas = 0;
-$verificaTabelaAlertas = $conexao->query("SHOW TABLES LIKE 'alertas'");
 
-if ($verificaTabelaAlertas && $verificaTabelaAlertas->num_rows > 0) {
+$verificaAlertas = $conexao->query("SHOW TABLES LIKE 'alertas'");
+
+if ($verificaAlertas && $verificaAlertas->num_rows > 0) {
     $sqlAlertas = "SELECT COUNT(*) AS total FROM alertas";
     $resultAlertas = $conexao->query($sqlAlertas);
 
@@ -64,20 +79,35 @@ if ($verificaTabelaAlertas && $verificaTabelaAlertas->num_rows > 0) {
 }
 
 /*
-|-------------------------------------------------
-| DADOS PARA O GRÁFICO
-|-------------------------------------------------
+|--------------------------------------------------------------------------
+| DADOS DO GRÁFICO
+|--------------------------------------------------------------------------
 */
-
 $labelsGrafico = [];
 $dadosGrafico = [];
 
-$sqlGrafico = "
-    SELECT temperatura, created_at
-    FROM leituras
-    ORDER BY id DESC
-    LIMIT 10
-";
+$temCreatedAt = false;
+$verificaCreatedAt = $conexao->query("SHOW COLUMNS FROM leituras LIKE 'created_at'");
+
+if ($verificaCreatedAt && $verificaCreatedAt->num_rows > 0) {
+    $temCreatedAt = true;
+}
+
+if ($temCreatedAt) {
+    $sqlGrafico = "
+        SELECT temperatura, created_at
+        FROM leituras
+        ORDER BY id DESC
+        LIMIT 10
+    ";
+} else {
+    $sqlGrafico = "
+        SELECT temperatura
+        FROM leituras
+        ORDER BY id DESC
+        LIMIT 10
+    ";
+}
 
 $resultGrafico = $conexao->query($sqlGrafico);
 
@@ -91,14 +121,15 @@ if ($resultGrafico) {
     $leituras = array_reverse($leituras);
 
     foreach ($leituras as $leitura) {
-        $labelsGrafico[] = isset($leitura["created_at"]) && $leitura["created_at"]
-            ? date("H:i", strtotime($leitura["created_at"]))
-            : "";
+        if ($temCreatedAt && !empty($leitura["created_at"])) {
+            $labelsGrafico[] = date("H:i", strtotime($leitura["created_at"]));
+        } else {
+            $labelsGrafico[] = "";
+        }
+
         $dadosGrafico[] = (float)$leitura["temperatura"];
     }
 }
-
-$conexao->close();
 ?>
 <!DOCTYPE html>
 <html lang="pt-br">
@@ -217,7 +248,6 @@ $conexao->close();
         <h1>Dashboard Geral</h1>
 
         <div class="dashboard">
-
             <div class="cards">
                 <div class="card">🌡️ Temp: <span id="temp"><?= $tempAtual ?></span>°C</div>
                 <div class="card">💧 Umidade: <span id="hum"><?= $umidadeAtual ?></span>%</div>
@@ -226,7 +256,6 @@ $conexao->close();
             </div>
 
             <div class="dashboard-grid">
-
                 <div class="chart-box">
                     <h3>Temperatura <?= $temLeitura ? "- " . htmlspecialchars($setorAtual) : "" ?></h3>
                     <div class="chart-area">
@@ -246,9 +275,7 @@ $conexao->close();
                         <?php endif; ?>
                     </ul>
                 </div>
-
             </div>
-
         </div>
     </main>
 
@@ -261,5 +288,4 @@ $conexao->close();
     </script>
     <script src="script.js"></script>
 </body>
-
 </html>
