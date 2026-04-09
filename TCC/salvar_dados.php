@@ -1,5 +1,13 @@
 <?php
-include __DIR__ . "/conexao.php";
+$caminhoConexao = __DIR__ . "/../../conexao.php";
+
+if (!file_exists($caminhoConexao)) {
+    http_response_code(500);
+    echo "erro: arquivo conexao.php não encontrado";
+    exit;
+}
+
+include $caminhoConexao;
 
 $setor_id = isset($_POST['setor_id']) ? (int) $_POST['setor_id'] : null;
 $temperatura = isset($_POST['temperatura']) ? (float) $_POST['temperatura'] : null;
@@ -10,7 +18,9 @@ if ($setor_id !== null && $temperatura !== null && $umidade !== null) {
     $stmt = $conexao->prepare($sql);
 
     if (!$stmt) {
-        die("erro no prepare: " . $conexao->error);
+        http_response_code(500);
+        echo "erro no prepare: " . $conexao->error;
+        exit;
     }
 
     $stmt->bind_param("idd", $setor_id, $temperatura, $umidade);
@@ -18,11 +28,13 @@ if ($setor_id !== null && $temperatura !== null && $umidade !== null) {
     if ($stmt->execute()) {
         echo "ok";
     } else {
+        http_response_code(500);
         echo "erro ao salvar";
     }
 
     $stmt->close();
 } else {
+    http_response_code(400);
     echo "dados incompletos";
 }
 
