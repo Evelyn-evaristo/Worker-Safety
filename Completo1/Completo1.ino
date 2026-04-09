@@ -7,7 +7,7 @@
 const char* ssid = "nao tem senha";
 const char* password = "MENTIRA TEM SENHA";
 
-const char* API_CONFIG = "http://192.168.0.100/worker_safety/codigo/api/configuracao.php";
+const char* API_CONFIG = "http://192.168.0.100/worker_safety/api/configuracao.php";
 const char* API_SALVAR = "http://192.168.0.100/worker_safety/api/salvar_leitura.php";
 
 unsigned long ultimaTentativaWiFi = 0;
